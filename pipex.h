@@ -6,7 +6,7 @@
 /*   By: lkoletzk <lkoletzk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/23 15:14:40 by lkoletzk          #+#    #+#             */
-/*   Updated: 2023/03/31 12:40:44 by lkoletzk         ###   ########.fr       */
+/*   Updated: 2023/04/13 16:37:41 by lkoletzk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,10 +38,23 @@ typedef struct s_pipe
 	char	**paths;
 	char	**cmd_args;
 
-	int		fd[2];
-	pid_t	pid[2];
+	int		in;
+	int		out;
+	int		p_fd[2];
+	pid_t	pid1;
+	pid_t	pid2;
 }	t_pipe;
 
+int		message(char *message);
+void	error_message(char *message, int state);
+
+void	cmd_paths_free(t_pipe *pipex);
+void	cmd_args_free(t_pipe *pipex);
+
 char	**ft_find_command_paths(char **envp);
+char	*ft_get_command(char **paths, char *cmd);
+
+void	ft_1st_child_process(t_pipe pipex, char *argv[], char *envp[]);
+void	ft_2nd_child_process(t_pipe pipex, char *argv[], char *envp[]);
 
 #endif

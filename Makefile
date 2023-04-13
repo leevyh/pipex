@@ -6,13 +6,14 @@
 #    By: lkoletzk <lkoletzk@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/03/23 14:55:16 by lkoletzk          #+#    #+#              #
-#    Updated: 2023/03/29 15:07:53 by lkoletzk         ###   ########.fr        #
+#    Updated: 2023/04/13 15:10:41 by lkoletzk         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = pipex
 
-SRCS = pipex.c
+SRCS = pipex.c \
+		main.c
 
 OBJS = $(SRCS:.c=.o)
 

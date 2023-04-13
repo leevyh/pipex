@@ -6,7 +6,7 @@
 /*   By: lkoletzk <lkoletzk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/23 14:49:02 by lkoletzk          #+#    #+#             */
-/*   Updated: 2023/03/31 12:52:54 by lkoletzk         ###   ########.fr       */
+/*   Updated: 2023/04/13 16:13:17 by lkoletzk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,43 +44,20 @@ exemple de test : CMD << STOP_VALUE | CMD1 >> file1
 
 # include "pipex.h"
 
-// void	pipex(int fd1, int fd2, char *cmd1, char *cmd2)
+
+// static char	**ft_freetab(char **tab)
 // {
-// 	int	end[2];
-// 	int status;
-// 	pid_t child1;
-// 	pid_t child2;
+// 	int	x;
 
-// 	pipe(end);
-// 	child1 = fork();
-// 	if (child1 < 0)
-// 		return (perror("Fork: "));
-// 	if (child1 == 0)
-// 		child_one(fd1, cmd1);
-// 	child2 = fork();
-// 	if (child2 < 0)
-// 		return (perror("Fork: "));
-// 	if (child2 == 0)
-// 		child_two(fd2, cmd2);
-// 	close(end[0]);					// this is the parent
-// 	close(end[1]);					// doing nothing
-// 	waitpid(child1, &status, 0);	// supervising the children
-// 	waitpid(child2, &status, 0);	// while they finish their tasks
+// 	x = 0;
+// 	while (tab[x])
+// 	{
+// 		free(tab[x]);
+// 		x++;
+// 	}
+// 	free(tab);
+// 	return (NULL);
 // }
-
-static char	**ft_freetab(char **tab)
-{
-	int	x;
-
-	x = 0;
-	while (tab[x])
-	{
-		free(tab[x]);
-		x++;
-	}
-	free(tab);
-	return (NULL);
-}
 
 char	*ft_get_command(char **paths, char *cmd)
 {
@@ -99,7 +76,7 @@ char	*ft_get_command(char **paths, char *cmd)
 			return (command);
 		free(command);
 	}
-	return (NULL);
+	return (cmd);
 }
 
 char	**ft_find_command_paths(char **envp)
@@ -107,9 +84,7 @@ char	**ft_find_command_paths(char **envp)
 	char	*path_envp;
 	char	**paths;
 	int	len;
-	int	x;
 
-	x = -1;
 	len = 0;
 	while (ft_strncmp("PATH", *envp, 4))
 		envp++;
@@ -122,85 +97,81 @@ char	**ft_find_command_paths(char **envp)
 	return (paths);
 }
 
-void	child_process(t_pipe pipex, char **argv, char **envp)
+void	ft_1st_child_process(t_pipe pipex, char **argv, char **envp)
 {
-	if (pipex.pid[0] == 0)
+	dup2(pipex.p_fd[1], 1);
+	close(pipex.p_fd[0]);
+	dup2(pipex.in, 0);
+	pipex.cmd_args = ft_split(argv[2], ' ');
+	pipex.cmd = ft_get_command(pipex.paths, pipex.cmd_args[0]);
+	if (!pipex.cmd)
 	{
-		dup2(pipex.fd[1], 1);
-		close(pipex.fd[0]);
-		pipex.cmd_args = ft_split(argv[2], " ");
-		pipex.cmd = ft_get_command(pipex.paths, pipex.cmd_args[0]);
-		if (!pipex.cmd)
-		{
-			error message cmd not found;
-			free all
-			exit ;
-		}
-		execve(pipex.cmd, pipex.cmd_args, envp);
-		free args + ft_find_command_paths
-		perror(strerror(errno));
-		close (fd[1]);
-		exit(1);
+		cmd_args_free(&pipex);
+		message("Command not found\n");
+		cmd_paths_free(&pipex);
+		exit(EXIT_FAILURE);
 	}
-	else
-		free?
+	execve(pipex.cmd, pipex.cmd_args, envp);
+	cmd_args_free(&pipex);
+	cmd_paths_free(&pipex);
+	perror(strerror(errno));
+	exit(1);
 }
 
-
-
-// /!\ Il faut d abord pipe les fd avant de fork pour que les enfants
-// puissent heriter des fd
-int	main(int argc, char **argv, char **envp)
+void	ft_2nd_child_process(t_pipe pipex, char **argv, char **envp)
 {
-	int	fd[2];
-
-	if (argc != 5)
-		return (0);
-	fd[0] = open(argv[1], O_RDONLY);
-	fd[1] = open(argv[4], O_CREAT | O_RDWR | O_TRUNC, 0644);
-	//  int open(const char *pathname, int flags, mode_t mode); 0644 means "rw-r--r--" on chmod of 420 ?
-	if (fd[0] < 0 || fd[1] < 0)
+	dup2(pipex.p_fd[0], 0);
+	close(pipex.p_fd[1]);
+	dup2(pipex.out, 1);
+	pipex.cmd_args = ft_split(argv[3], ' ');
+	pipex.cmd = ft_get_command(pipex.paths, pipex.cmd_args[0]);
+	if (!pipex.cmd)
 	{
-		perror("fd");
-		exit (EXIT_FAILURE);
+		cmd_args_free(&pipex);
+		message("Command not found\n");
+		cmd_paths_free(&pipex);
+		exit(EXIT_FAILURE);
 	}
-	// pipex(fd1, fd2, argv, envp);
-	ft_find_command(argc, argv, envp);
-	if (access(argv[2], X_OK) == 0 && access(argv[3], X_OK) == 0)
-		ft_printf("\"%s\" are accessible commands in executable mode\n",
-			argv[2], argv[3]);
-
-
-	else if (access(argv[2], X_OK) < 0 || access(argv[3], X_OK) < 0)
-		ft_printf("Error: one or both commands are not accessible in \
-			executable mode %s\n", argv[1], strerror(access(argv[1], X_OK)));
-
-	if (pipe(fd) == -1)
-	{
-		perror("Pipe");
-		exit (EXIT_FAILURE);
-	}
-	pid_t pid1 = fork();
-	if (pid1 == 0)
-	{
-		close(fd[0]);
-		do the cmd1 on infile;
-		close (fd[1]);
-	}
-	else
-		...
-	pid_t	pid2 = fork();
-	if (pid2 == 0)
-	{
-		close(fd[1]);
-		do the cmd2 on outfile;
-		close (fd[0]);
-	}
-	else
-		...
-	close(fd[0]);
-	close(fd[1]);
-	return (0);
+	execve(pipex.cmd, pipex.cmd_args, envp);
+	cmd_args_free(&pipex);
+	cmd_paths_free(&pipex);
+	perror(strerror(errno));
+	exit(1);
 }
 
+int	message(char *message)
+{
+	write(2, message, ft_strlen(message));
+	return (1);
+}
 
+void	error_message(char *message, int state)
+{
+	if (!state)
+		return ;
+	perror(message);
+	exit(1);
+}
+
+void	cmd_paths_free(t_pipe *pipex)
+{
+	int		i;
+
+	i = 0;
+	close(pipex->in);
+	close(pipex->out);
+	while (pipex->paths[i])
+		free(pipex->paths[i++]);
+	free(pipex->paths);
+}
+
+void	cmd_args_free(t_pipe *pipex)
+{
+	int	i;
+
+	i = 0;
+	while (pipex->cmd_args[i])
+		free(pipex->cmd_args[i++]);
+	free(pipex->cmd_args);
+	free(pipex->cmd);
+}
