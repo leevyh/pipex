@@ -6,7 +6,7 @@
 #    By: lkoletzk <lkoletzk@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/03/23 14:55:16 by lkoletzk          #+#    #+#              #
-#    Updated: 2023/05/10 12:30:51 by lkoletzk         ###   ########.fr        #
+#    Updated: 2023/05/11 15:56:29 by lkoletzk         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,7 +14,8 @@ NAME = pipex
 
 SRCS = pipex.c \
 		main.c \
-		utils.c
+		utils.c \
+		here_doc.c
 
 
 OBJS = $(SRCS:.c=.o)

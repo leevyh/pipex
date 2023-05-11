@@ -6,7 +6,7 @@
 /*   By: lkoletzk <lkoletzk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/23 14:49:02 by lkoletzk          #+#    #+#             */
-/*   Updated: 2023/05/10 17:03:36 by lkoletzk         ###   ########.fr       */
+/*   Updated: 2023/05/11 17:00:23 by lkoletzk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,24 +55,24 @@ char	*ft_get_command(char **paths, char **cmd_args)
 	char	*command;
 	int		x;
 
-	if (!ft_strncmp("/", cmd_args[0], 0) && access(cmd_args[0], F_OK | X_OK) == 0) // chemin absolu
+	if (!ft_strncmp("/", cmd_args[0], 0) && access(cmd_args[0], F_OK | X_OK) == 0)
 		return(cmd_args[0]);
 	else
 	{
 		x = -1;
 		while(paths[++x])
 		{
-			tmp = ft_strjoin(paths[x], "/");									// Ajout du '/' après de path
-			if (!tmp)															// Securité MALLOC FAILED: RETURN
+			tmp = ft_strjoin(paths[x], "/");
+			if (!tmp)
 				return (NULL);
-			command = ft_strjoin(tmp, cmd_args[0]);								// Ajout de la cmd après le path
-			free(tmp);															// On free le premier path avec le '/'
-			if (!command)														// Securité MALLOC FAILED: RETURN
+			command = ft_strjoin(tmp, cmd_args[0]);
+			free(tmp);
+			if (!command)
 				return (NULL);
 			if (access(command, F_OK | X_OK) == 0)
 				return(command);
+			free(command);	
 		}
-		free(command);															// Securité MALLOC: FREE du path complet
 	}
 	return (NULL);
 }
@@ -87,19 +87,19 @@ char	**ft_find_command_paths(char **envp)
 	int		len;
 
 	len = 0;
-	// if (!envp)
-	// 	return (NULL);
+	if (!envp[0])
+		return (NULL);
 	while (ft_strncmp("PATH=", *envp, 5))
 		envp++;
-	path_envp = *envp + 5;
-	while (path_envp[len] != '\n' && path_envp[len] != '\0')
+	*envp = *envp + 5;
+	while (envp[0][len] != '\n' && envp[0][len] != '\0')
 		len++;
-	path_envp = ft_substr(path_envp, 0, len);
-	if (!path_envp)																// Securité MALLOC FAILED: RETURN
+	path_envp = ft_substr(envp[0], 0, len);
+	if (!path_envp)
 		return (NULL);
 	paths = ft_split(path_envp, ':');
-	free(path_envp);															// On free le PATH dont on a plus besoin
-	if (!paths)																	// Securité MALLOC FAILED: RETURN + FREE du MALLOC précédent
+	free(path_envp);
+	if (!paths)
 		return (ft_freetab(paths));
 	return (paths);
 }
@@ -107,28 +107,27 @@ char	**ft_find_command_paths(char **envp)
 /* 1- Recupere la commande et ses arguments et les split
 3- Recupere le chemin de la commande
 4- Execute la commande */
-void	ft_execve(t_pipe pipex, char *argv, char **envp)
+void	ft_execve(char *argv, char **envp)
 {
-	pipex.cmd_args = ft_split(argv, ' ');
-	if (!pipex.cmd_args)														// Securité MALLOC FAILED: RETURN
-		return ;
-	pipex.cmd = ft_get_command(pipex.paths, pipex.cmd_args);
-	if (!pipex.cmd)																// Securité MALLOC FAILED: RETURN + FREE du MALLOC précédent
+	char	**paths;
+	char	**cmd_args;
+	char	*cmd;
+	
+	paths = ft_find_command_paths(envp);
+	cmd_args = ft_split(argv, ' ');
+	if (!cmd_args)		
+		exit(EXIT_FAILURE);
+	cmd = ft_get_command(paths, cmd_args);
+	if (!cmd || execve(cmd, cmd_args, envp) == -1)
 	{
-		ft_freetab(pipex.cmd_args);
-		free(pipex.cmd);
-		ft_freetab(pipex.paths);
-		ft_perror("command not found2", pipex);
-	}
-	// ft_printf("command %s\n", pipex.cmd);
-	if (execve(pipex.cmd, pipex.cmd_args, envp) < 0)
-	{
-		free(pipex.cmd);
-		ft_freetab(pipex.cmd_args);
+		ft_putstr_fd("command not found: ", 2);
+		ft_putendl_fd(cmd_args[0], 2);
+		ft_freetab(paths);
+		ft_freetab(cmd_args);
+		if (cmd)
+			free(cmd);
 		exit(EXIT_FAILURE);
 	}
-	free(pipex.cmd);
-	ft_freetab(pipex.cmd_args);
 }
 
 void	ft_1st_child_process(t_pipe pipex, char **argv, char **envp)
@@ -137,29 +136,29 @@ void	ft_1st_child_process(t_pipe pipex, char **argv, char **envp)
 	
 	infile = open(argv[1], O_RDONLY);
 	if (infile < 0)
-		ft_perror("fd", pipex);
+		ft_perror("fd");
 	dup2(infile, STDIN_FILENO);
 	close(infile);
 	dup2(pipex.fd[1], STDOUT_FILENO);
 	close(pipex.fd[0]);
 	close(pipex.fd[1]);
-	ft_execve(pipex, argv[2], envp);
+	if (!ft_strncmp("here_doc", argv[1], 8))
+		ft_execve(argv[3], envp);
+	else
+		ft_execve(argv[2], envp);
 }
 
-void	ft_2nd_child_process(t_pipe pipex, char **argv, char **envp)
+void	ft_last_child_process(t_pipe pipex, int argc, char **argv, char **envp)
 {
 	int	outfile;
-	
-	outfile = open(argv[4], O_CREAT | O_RDWR | O_TRUNC, 0644);
+
+	outfile = open(argv[argc - 1], O_CREAT | O_RDWR | O_TRUNC, 0644);
 	if (outfile < 0)
-		ft_perror("fd", pipex);
+		ft_perror("fd");
 	dup2(outfile, STDOUT_FILENO);
 	close(outfile);
 	dup2(pipex.fd[0], STDIN_FILENO);
 	close(pipex.fd[0]);
 	close(pipex.fd[1]);
-	ft_execve(pipex, argv[3], envp);
+	ft_execve(argv[3], envp);
 }
-
-
-
