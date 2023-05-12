@@ -6,7 +6,7 @@
 /*   By: lkoletzk <lkoletzk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/10 17:42:37 by lkoletzk          #+#    #+#             */
-/*   Updated: 2023/05/12 14:05:04 by lkoletzk         ###   ########.fr       */
+/*   Updated: 2023/05/12 15:27:36 by lkoletzk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,6 @@ void	ft_here_doc(char **argv)
 		fd = open("here_doc", O_RDWR | O_CREAT, 0777);
 		while (line)
 		{
-			ft_printf("len : %d\n", ft_strlen(argv[2]));
 			if (ft_strncmp(argv[2], line, ft_strlen(argv[2])) == 0)		// ERREUR accepte tout ce qui commence par 'infile'
 				break;
 			write(1, "pipe here_doc> ", 15);
@@ -38,7 +37,7 @@ void	ft_here_doc(char **argv)
 		free(line);
 		argv[1] = "here_doc";
 		close(fd);
-	}
+	}																	// ERREUR en cas de CTRL + C = LEAKS
 }
 
 // void    ft_close_fds(t_pipe pipex, int i)

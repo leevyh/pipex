@@ -6,7 +6,7 @@
 /*   By: lkoletzk <lkoletzk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/23 14:49:02 by lkoletzk          #+#    #+#             */
-/*   Updated: 2023/05/12 14:05:19 by lkoletzk         ###   ########.fr       */
+/*   Updated: 2023/05/12 16:46:24 by lkoletzk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,9 +113,14 @@ void	ft_execve(char *argv, char **envp)
 	char	**cmd_args;
 	char	*cmd;
 	
+	if (argv[0] == '\0' || argv[0] == ' ') // Accepte-t-on les commandes qui commencent par des espaces ?
+	{
+		ft_putstr_fd("command not found\n", 2);
+		exit(EXIT_FAILURE);
+	}
 	paths = ft_find_command_paths(envp);
 	cmd_args = ft_split(argv, ' ');
-	if (!cmd_args)		
+	if (!cmd_args)
 		exit(EXIT_FAILURE);
 	cmd = ft_get_command(paths, cmd_args);
 	if (!cmd || execve(cmd, cmd_args, envp) == -1)
@@ -147,14 +152,16 @@ void	ft_1st_child_process(t_pipe pipex, char **argv, char **envp)
 	else
 		ft_execve(argv[2], envp);
 }
-// void	ft_mid_child_process(t_pipe pipex, char **argv, char **envp)
-// {
-// 	dup2(pipex.fd[i][0], STDIN_FILENO);
-// 	dup2(pipex.fd[i+1][1], STDOUT_FILENO);
-// 	ft_close_fds(pipex, i);
-// 	ft_close_fds(pipex, i+1);
-// 	ft_execve(argv[2], envp);
-// }
+void	ft_mid_child_process(t_pipe pipex, char **argv, char **envp, int i)
+{
+	dup2(pipex.fd[0], STDIN_FILENO);
+	dup2(pipex.fd[1], STDOUT_FILENO);
+	close(pipex.fd[0]);
+	close(pipex.fd[1]);
+	// ft_close_fds(pipex, i);
+	// ft_close_fds(pipex, i+1);
+	ft_execve(argv[3], envp);
+}
 
 void	ft_last_child_process(t_pipe pipex, int argc, char **argv, char **envp)
 {
@@ -168,5 +175,5 @@ void	ft_last_child_process(t_pipe pipex, int argc, char **argv, char **envp)
 	dup2(pipex.fd[0], STDIN_FILENO);
 	close(pipex.fd[0]);
 	close(pipex.fd[1]);
-	ft_execve(argv[3], envp);
+	ft_execve(argv[argc - 2], envp);
 }

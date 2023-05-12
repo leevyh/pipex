@@ -6,7 +6,7 @@
 /*   By: lkoletzk <lkoletzk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/23 15:14:40 by lkoletzk          #+#    #+#             */
-/*   Updated: 2023/05/11 17:01:12 by lkoletzk         ###   ########.fr       */
+/*   Updated: 2023/05/12 15:34:23 by lkoletzk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ char	**ft_find_command_paths(char **envp);
 char	*ft_get_command(char **paths, char **args);
 
 void	ft_1st_child_process(t_pipe pipex, char *argv[], char *envp[]);
+void	ft_mid_child_process(t_pipe pipex, char **argv, char *envp[]);
 void	ft_last_child_process(t_pipe pipex, int argc, char *argv[], char *envp[]);
 
 void    ft_here_doc(char **argv);
