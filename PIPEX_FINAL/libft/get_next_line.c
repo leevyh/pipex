@@ -6,7 +6,7 @@
 /*   By: lkoletzk <lkoletzk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/07 13:55:24 by lkoletzk          #+#    #+#             */
-/*   Updated: 2023/05/11 19:00:50 by lkoletzk         ###   ########.fr       */
+/*   Updated: 2023/05/12 11:33:14 by lkoletzk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ static char	*ft_join(char *s1, char *s2)
 }
 
 /*----- Lis x catacteres (BUFFER_SIZE) dans le fichier (fd) -----*/
-static char	*readline(int fd, char *stockage)
+char	*readline(int fd, char *stockage)
 {
 	char	*buffer;
 	int		nbytes;
@@ -61,7 +61,7 @@ static char	*readline(int fd, char *stockage)
 }
 
 /*----- Cree la ligne a renvoyer -----*/
-static char	*createline(char *stockage)
+char	*createline(char *stockage)
 {
 	char	*line;
 	int		i;
@@ -81,12 +81,17 @@ static char	*createline(char *stockage)
 }
 
 /*----- Recupere le reste du stockage (apres le retour a la ligne) -----*/
-static char	*restline(char *stockage)
+char	*restline(char *stockage)
 {
 	char	*new_stock;
 	int		i;
 
 	i = 0;
+	if (stockage[i] == '\0')
+	{
+		free(stockage);
+		return (NULL);
+	}
 	while (stockage[i] != '\n' && stockage[i] != '\0')
 		i++;
 	if (stockage[i] == '\0')
@@ -96,25 +101,28 @@ static char	*restline(char *stockage)
 	if (!new_stock)
 		return (NULL);
 	ft_strlcpy(new_stock, stockage + i, ft_strlen(stockage) - i + 1);
+	free(stockage);
 	return (new_stock);
 }
 
 char	*get_next_line(int fd)
 {
-	static char	*stockage[1024];
+	static char	*stockage;
 	char		*line;
-	char		*tmp;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	if (!stockage[fd] || (stockage[fd] && !ft_strchr(stockage[fd], '\n')))
-		stockage[fd] = readline(fd, stockage[fd]);
-	if (!stockage[fd])
+	if (!stockage || (stockage && !ft_strchr(stockage, '\n')))
+		stockage = readline(fd, stockage);
+	if (!stockage)
 		return (NULL);
-	line = createline(stockage[fd]);
-	tmp = restline(stockage[fd]);
-	free(stockage[fd]);
-	stockage[fd] = tmp;
+	line = createline(stockage);
+	stockage = restline(stockage);
+	if (stockage && !stockage[0])
+	{
+		free(stockage);
+		stockage = NULL;
+	}
 	return (line);
 }
 
@@ -125,55 +133,55 @@ char	*get_next_line(int fd)
 
 int	main(void)
 {
-	int	fd1;
-	int	fd2;
-	int	fd3;
+	int	fd;
 	char	*line;
 	int	i;
 
 	i = 1;
-	fd1 = open("Tristesse", O_RDONLY);
-	fd2 = open("Blague", O_RDONLY);
-	fd3 = open("Confiture de nouilles", O_RDONLY);
+	fd = open("../Tristesse", O_RDONLY);
 
-	printf("ligne %i : |%s|\n", i++, line = get_next_line(fd1));
+	printf("ligne %i : |%s|\n", i++, line = get_next_line(fd));
 	free(line);
-	printf("ligne %i : |%s|\n", i++, line = get_next_line(fd2));
+	printf("ligne %i : |%s|\n", i++, line = get_next_line(fd));
 	free(line);
-	printf("ligne %i : |%s|\n", i++, line = get_next_line(fd3));
+	printf("ligne %i : |%s|\n", i++, line = get_next_line(fd));
 	free(line);
-	printf("ligne %i : |%s|\n", i++, line = get_next_line(fd1));
+	printf("ligne %i : |%s|\n", i++, line = get_next_line(fd));
 	free(line);
-	printf("ligne %i : |%s|\n", i++, line = get_next_line(fd2));
+	printf("ligne %i : |%s|\n", i++, line = get_next_line(fd));
 	free(line);
-	printf("ligne %i : |%s|\n", i++, line = get_next_line(fd3));
+	printf("ligne %i : |%s|\n", i++, line = get_next_line(fd));
 	free(line);
-	printf("ligne %i : |%s|\n", i++, line = get_next_line(fd1));
+	printf("ligne %i : |%s|\n", i++, line = get_next_line(fd));
 	free(line);
-	printf("ligne %i : |%s|\n", i++, line = get_next_line(fd2));
+	printf("ligne %i : |%s|\n", i++, line = get_next_line(fd));
 	free(line);
-	printf("ligne %i : |%s|\n", i++, line = get_next_line(fd3));
+	printf("ligne %i : |%s|\n", i++, line = get_next_line(fd));
 	free(line);
-	printf("ligne %i : |%s|\n", i++, line = get_next_line(fd1));
+	printf("ligne %i : |%s|\n", i++, line = get_next_line(fd));
 	free(line);
-	printf("ligne %i : |%s|\n", i++, line = get_next_line(fd2));
+	printf("ligne %i : |%s|\n", i++, line = get_next_line(fd));
 	free(line);
-	printf("ligne %i : |%s|\n", i++, line = get_next_line(fd3));
+	printf("ligne %i : |%s|\n", i++, line = get_next_line(fd));
 	free(line);
-	printf("ligne %i : |%s|\n", i++, line = get_next_line(fd1));
+	printf("ligne %i : |%s|\n", i++, line = get_next_line(fd));
 	free(line);
-	printf("ligne %i : |%s|\n", i++, line = get_next_line(fd2));
+	printf("ligne %i : |%s|\n", i++, line = get_next_line(fd));
 	free(line);
-	printf("ligne %i : |%s|\n", i++, line = get_next_line(fd3));
+	printf("ligne %i : |%s|\n", i++, line = get_next_line(fd));
 	free(line);
-	printf("ligne %i : |%s|\n", i++, line = get_next_line(fd1));
+	printf("ligne %i : |%s|\n", i++, line = get_next_line(fd));
 	free(line);
-	printf("ligne %i : |%s|\n", i++, line = get_next_line(fd2));
+	printf("ligne %i : |%s|\n", i++, line = get_next_line(fd));
 	free(line);
-	printf("ligne %i : |%s|\n", i++, line = get_next_line(fd3));
+	printf("ligne %i : |%s|\n", i++, line = get_next_line(fd));
+	free(line);
+	printf("ligne %i : |%s|\n", i++, line = get_next_line(fd));
+	free(line);
+	printf("ligne %i : |%s|\n", i++, line = get_next_line(fd));
 	free(line);
 
-	close(fd1);
-	close(fd2);
-	close(fd3);
+
+
+	close(fd);
 }*/

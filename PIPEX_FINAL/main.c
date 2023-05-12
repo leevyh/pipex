@@ -6,7 +6,7 @@
 /*   By: lkoletzk <lkoletzk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/31 10:49:26 by lkoletzk          #+#    #+#             */
-/*   Updated: 2023/05/11 18:23:38 by lkoletzk         ###   ########.fr       */
+/*   Updated: 2023/05/12 14:02:07 by lkoletzk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int	main(int argc, char **argv, char **envp)
 		exit(EXIT_FAILURE);
 	}
 	if (argc >= 5)
-        ft_here_doc(argv);
+		ft_here_doc(argv);
 
 	if(pipe(pipex.fd) == -1)
 		ft_perror("Pipe");

@@ -6,7 +6,7 @@
 /*   By: lkoletzk <lkoletzk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/07 14:42:08 by lkoletzk          #+#    #+#             */
-/*   Updated: 2023/05/08 16:08:13 by lkoletzk         ###   ########.fr       */
+/*   Updated: 2023/05/12 13:41:05 by lkoletzk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,3 +31,11 @@ int	ft_strncmp(const char *s1, const char *s2, size_t n)
 	}
 	return (ps1[i] - ps2[i]);
 }
+
+// int	main(int argc, char **argv)
+// {
+// 	(void)argc;
+// 	ft_printf("len: %d\n", ft_strlen(argv[1]));
+// 	ft_printf("%d\n", ft_strncmp(argv[1], argv[2], ft_strlen(argv[1]) + 1));
+// 	return (0);
+// }

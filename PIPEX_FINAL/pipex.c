@@ -6,7 +6,7 @@
 /*   By: lkoletzk <lkoletzk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/23 14:49:02 by lkoletzk          #+#    #+#             */
-/*   Updated: 2023/05/11 17:00:23 by lkoletzk         ###   ########.fr       */
+/*   Updated: 2023/05/12 14:05:19 by lkoletzk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,6 +147,14 @@ void	ft_1st_child_process(t_pipe pipex, char **argv, char **envp)
 	else
 		ft_execve(argv[2], envp);
 }
+// void	ft_mid_child_process(t_pipe pipex, char **argv, char **envp)
+// {
+// 	dup2(pipex.fd[i][0], STDIN_FILENO);
+// 	dup2(pipex.fd[i+1][1], STDOUT_FILENO);
+// 	ft_close_fds(pipex, i);
+// 	ft_close_fds(pipex, i+1);
+// 	ft_execve(argv[2], envp);
+// }
 
 void	ft_last_child_process(t_pipe pipex, int argc, char **argv, char **envp)
 {
