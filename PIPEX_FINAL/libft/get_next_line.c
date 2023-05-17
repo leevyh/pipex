@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_livia.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lkoletzk <lkoletzk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/07 13:55:24 by lkoletzk          #+#    #+#             */
-/*   Updated: 2023/05/12 11:33:14 by lkoletzk         ###   ########.fr       */
+/*   Updated: 2023/05/17 12:41:52 by lkoletzk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ static char	*ft_join(char *s1, char *s2)
 	}
 	if (!s2)
 		return (NULL);
-	new_stock = malloc((ft_strlen(s1) + ft_strlen(s2) + 1) * sizeof(char));
+	new_stock = ft_calloc((ft_strlen(s1) + ft_strlen(s2) + 1), sizeof(char));
 	if (!new_stock)
 		return (NULL);
 	ft_strlcpy(new_stock, s1, ft_strlen(s1) + 1);
@@ -37,12 +37,9 @@ static char	*ft_join(char *s1, char *s2)
 /*----- Lis x catacteres (BUFFER_SIZE) dans le fichier (fd) -----*/
 char	*readline(int fd, char *stockage)
 {
-	char	*buffer;
+	char	buffer[BUFFER_SIZE + 1];
 	int		nbytes;
 
-	buffer = malloc((BUFFER_SIZE + 1) * sizeof(char));
-	if (!buffer)
-		return (NULL);
 	buffer[0] = '\0';
 	nbytes = 1;
 	while (nbytes > 0 && !ft_strchr(stockage, '\n'))
@@ -54,7 +51,6 @@ char	*readline(int fd, char *stockage)
 			stockage = ft_join(stockage, buffer);
 		}
 	}
-	free(buffer);
 	if (nbytes == -1)
 		return (NULL);
 	return (stockage);
@@ -97,7 +93,7 @@ char	*restline(char *stockage)
 	if (stockage[i] == '\0')
 		return (NULL);
 	i++;
-	new_stock = malloc((ft_strlen(stockage) - i + 1) * sizeof(char));
+	new_stock = ft_calloc((ft_strlen(stockage) - i + 1), sizeof(char));
 	if (!new_stock)
 		return (NULL);
 	ft_strlcpy(new_stock, stockage + i, ft_strlen(stockage) - i + 1);

@@ -6,7 +6,7 @@
 #    By: lkoletzk <lkoletzk@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/11/15 11:51:05 by lkoletzk          #+#    #+#              #
-#    Updated: 2023/02/16 13:40:38 by lkoletzk         ###   ########.fr        #
+#    Updated: 2023/05/17 12:41:49 by lkoletzk         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -71,7 +71,7 @@ GNL_OBJS = $(GNL:.c=.o)
 
 CC = cc
 
-CFLAGS = -Wall -Werror -Wextra
+CFLAGS = -Wall -Werror -Wextra -g3
 
 all: $(NAME)
 

@@ -6,7 +6,7 @@
 #    By: lkoletzk <lkoletzk@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/03/23 14:55:16 by lkoletzk          #+#    #+#              #
-#    Updated: 2023/05/11 15:56:29 by lkoletzk         ###   ########.fr        #
+#    Updated: 2023/05/17 11:42:59 by lkoletzk         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,7 +25,7 @@ LIBFT = libft/libft.a
 
 CC = cc
 
-CFLAGS = -Wall -Werror -Wextra
+CFLAGS = -Wall -Werror -Wextra -g3
 
 all: $(NAME)
 

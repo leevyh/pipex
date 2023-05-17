@@ -6,7 +6,7 @@
 /*   By: lkoletzk <lkoletzk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/10 17:39:32 by lkoletzk          #+#    #+#             */
-/*   Updated: 2023/05/10 17:52:39 by lkoletzk         ###   ########.fr       */
+/*   Updated: 2023/05/16 09:53:51 by lkoletzk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,11 +15,11 @@
 int	main(int argc, char **argv, char **envp)
 {
 	t_pipe	pipex;
-	int		here_doc;
 
-	here_doc = 0;
-	if (argc > 1 && !ft_strncmp(argv[1], "here_doc", 8))
-		here_doc++;
+
+	if (argc >= 5)
+		ft_here_doc(argv); 
+
 	if (argc < 5)
 	{
 		write(2, "Unvalid number of arguments\n", 28);

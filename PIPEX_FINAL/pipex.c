@@ -6,7 +6,7 @@
 /*   By: lkoletzk <lkoletzk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/23 14:49:02 by lkoletzk          #+#    #+#             */
-/*   Updated: 2023/05/12 16:46:24 by lkoletzk         ###   ########.fr       */
+/*   Updated: 2023/05/17 14:02:34 by lkoletzk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,7 +113,7 @@ void	ft_execve(char *argv, char **envp)
 	char	**cmd_args;
 	char	*cmd;
 	
-	if (argv[0] == '\0' || argv[0] == ' ') // Accepte-t-on les commandes qui commencent par des espaces ?
+	if (argv[0] == '\0' || argv[0] == ' ')
 	{
 		ft_putstr_fd("command not found\n", 2);
 		exit(EXIT_FAILURE);
@@ -135,7 +135,7 @@ void	ft_execve(char *argv, char **envp)
 	}
 }
 
-void	ft_1st_child_process(t_pipe pipex, char **argv, char **envp)
+void	ft_1st_child_process(t_pipe *pipex, char **argv, char **envp, int i)
 {
 	int	infile;
 	
@@ -144,26 +144,12 @@ void	ft_1st_child_process(t_pipe pipex, char **argv, char **envp)
 		ft_perror("fd");
 	dup2(infile, STDIN_FILENO);
 	close(infile);
-	dup2(pipex.fd[1], STDOUT_FILENO);
-	close(pipex.fd[0]);
-	close(pipex.fd[1]);
-	if (!ft_strncmp("here_doc", argv[1], 8))
-		ft_execve(argv[3], envp);
-	else
-		ft_execve(argv[2], envp);
-}
-void	ft_mid_child_process(t_pipe pipex, char **argv, char **envp, int i)
-{
-	dup2(pipex.fd[0], STDIN_FILENO);
-	dup2(pipex.fd[1], STDOUT_FILENO);
-	close(pipex.fd[0]);
-	close(pipex.fd[1]);
-	// ft_close_fds(pipex, i);
-	// ft_close_fds(pipex, i+1);
-	ft_execve(argv[3], envp);
+	dup2(pipex->fd[1], STDOUT_FILENO);
+	ft_close_fds(pipex->fd);
+	ft_execve(argv[i], envp);
 }
 
-void	ft_last_child_process(t_pipe pipex, int argc, char **argv, char **envp)
+void	ft_last_child_process(t_pipe *pipex, int argc, char **argv, char **envp)
 {
 	int	outfile;
 
@@ -172,8 +158,8 @@ void	ft_last_child_process(t_pipe pipex, int argc, char **argv, char **envp)
 		ft_perror("fd");
 	dup2(outfile, STDOUT_FILENO);
 	close(outfile);
-	dup2(pipex.fd[0], STDIN_FILENO);
-	close(pipex.fd[0]);
-	close(pipex.fd[1]);
+	dup2(pipex->fd[0], STDIN_FILENO);
+	ft_close_fds(pipex->fd);
 	ft_execve(argv[argc - 2], envp);
 }
+
