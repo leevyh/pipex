@@ -6,7 +6,7 @@
 /*   By: lkoletzk <lkoletzk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/23 15:14:40 by lkoletzk          #+#    #+#             */
-/*   Updated: 2023/05/17 14:03:50 by lkoletzk         ###   ########.fr       */
+/*   Updated: 2023/05/17 15:44:20 by lkoletzk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,10 +32,18 @@
 
 # include "libft/libft.h"
 
+// MANDATORY VERSION
+// typedef struct s_pipe
+// {
+// 	int		fd[2];
+// 	pid_t	pid;
+// }	t_pipe;
+
+// BONUS VERSION
 typedef struct s_pipe
 {
-	int		fd[2];
-	pid_t	pid;
+	int		infile;
+	int		outfile;
 }	t_pipe;
 
 void	ft_perror(char *str);
@@ -50,5 +58,7 @@ void	ft_mid_child_process(t_pipe *pipex, char **argv, char *envp[], int i);
 void	ft_last_child_process(t_pipe *pipex, int argc, char **argv, char *envp[]);
 
 int		ft_here_doc(int argc, char **argv);
+
+void	ft_first_infile(char **av, t_pipe *pipex);
 
 #endif
