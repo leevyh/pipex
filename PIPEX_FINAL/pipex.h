@@ -6,7 +6,7 @@
 /*   By: lkoletzk <lkoletzk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/23 15:14:40 by lkoletzk          #+#    #+#             */
-/*   Updated: 2023/05/17 15:44:20 by lkoletzk         ###   ########.fr       */
+/*   Updated: 2023/05/18 11:30:42 by lkoletzk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,33 +32,38 @@
 
 # include "libft/libft.h"
 
-// MANDATORY VERSION
-// typedef struct s_pipe
-// {
-// 	int		fd[2];
-// 	pid_t	pid;
-// }	t_pipe;
-
-// BONUS VERSION
-typedef struct s_pipe
+/* PARTIE MANDATAIRE */
+typedef struct s_pipe_m
 {
-	int		infile;
-	int		outfile;
-}	t_pipe;
+	int		fd[2];
+	pid_t	pid;
+}	t_pipe_m;
 
+/* Fonctions de gestion */
 void	ft_perror(char *str);
 char	**ft_freetab(char **tab);
 void	ft_close_fds(int fd[]);
 
-char	**ft_find_command_paths(char **envp);
+char	**ft_find_command_paths(char *envp[]);
 char	*ft_get_command(char **paths, char **args);
+void	ft_execve(char *argv, char *envp[]);
 
-void	ft_1st_child_process(t_pipe *pipex, char **argv, char *envp[], int i);
-void	ft_mid_child_process(t_pipe *pipex, char **argv, char *envp[], int i);
-void	ft_last_child_process(t_pipe *pipex, int argc, char **argv, char *envp[]);
+void	ft_1st_child_process(t_pipe_m *pipex, char **argv, char *envp[]);
+void	ft_lst_child_process(t_pipe_m *pipex, int argc, char **argv,
+			char *envp[]);
+
+/* PARTIE BONUS */
+typedef struct s_pipe_b
+{
+	int		infile;
+	int		outfile;
+}	t_pipe_b;
 
 int		ft_here_doc(int argc, char **argv);
-
-void	ft_first_infile(char **av, t_pipe *pipex);
+void	ft_1st_input(char **argv, t_pipe_b *pipex);
+void	ft_save_output(t_pipe_b *pipex, int fd[]);
+void	ft_child_processes(t_pipe_b *pipex, char **argv, char *envp[], int i);
+void	ft_last_child_process(t_pipe_b *pipex, int argc, char **argv,
+			char *envp[]);
 
 #endif

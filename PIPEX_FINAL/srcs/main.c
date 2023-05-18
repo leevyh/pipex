@@ -1,39 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lkoletzk <lkoletzk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/05/10 12:27:17 by lkoletzk          #+#    #+#             */
-/*   Updated: 2023/05/17 14:04:11 by lkoletzk         ###   ########.fr       */
+/*   Created: 2023/03/31 10:49:26 by lkoletzk          #+#    #+#             */
+/*   Updated: 2023/05/18 12:10:39 by lkoletzk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "pipex.h"
+#include "../pipex.h"
 
-void	ft_perror(char *str)
+int	main(int argc, char **argv, char **envp)
 {
-	perror(str);
-	exit(EXIT_FAILURE);
-}
+	int			i;
+	t_pipe_m	pipex;
 
-char	**ft_freetab(char **tab)
-{
-	int	x;
-
-	x = 0;
-	while (tab[x])
+	if (argc != 5)
 	{
-		free(tab[x]);
-		x++;
+		write(2, "Error: Unvalid number of arguments\n", 36);
+		exit(EXIT_FAILURE);
 	}
-	free(tab);
-	return (NULL);
-}
-
-void	ft_close_fds(int fd[])
-{
-	close(fd[0]);
-	close(fd[1]);
+	i = 2;
+	if (pipe(pipex.fd) == -1)
+		ft_perror("Pipe");
+	ft_1st_child_process(&pipex, argv, envp);
+	ft_lst_child_process(&pipex, argc, argv, envp);
+	ft_close_fds(pipex.fd);
+	while (wait(NULL) > 0)
+		;
+	return (0);
 }

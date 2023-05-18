@@ -6,7 +6,7 @@
 /*   By: lkoletzk <lkoletzk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/14 18:29:48 by lkoletzk          #+#    #+#             */
-/*   Updated: 2023/05/17 11:51:15 by lkoletzk         ###   ########.fr       */
+/*   Updated: 2023/05/18 11:26:18 by lkoletzk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ void	*ft_memmove(void *dest, const void *src, size_t n);
 void	*ft_memchr(const void *str, int c, size_t n);
 void	*ft_calloc(size_t elementCount, size_t elementSize);
 
-/*------------------------------ LISTES CHAINEES ------------------------------*/
+/*------------------------------ LISTES CHAINEES --------------------------*/
 
 // t_list	*ft_lstnew(void *content);
 // void	ft_lstadd_front(t_list **lst, t_list *new);
