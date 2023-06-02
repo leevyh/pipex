@@ -6,7 +6,7 @@
 /*   By: lkoletzk <lkoletzk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/31 10:49:26 by lkoletzk          #+#    #+#             */
-/*   Updated: 2023/05/18 12:10:39 by lkoletzk         ###   ########.fr       */
+/*   Updated: 2023/06/02 11:35:03 by lkoletzk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,8 @@ int	main(int argc, char **argv, char **envp)
 	i = 2;
 	if (pipe(pipex.fd) == -1)
 		ft_perror("Pipe");
-	ft_1st_child_process(&pipex, argv, envp);
-	ft_lst_child_process(&pipex, argc, argv, envp);
+	ft_first_child_process(&pipex, argv, envp);
+	ft_last_child_process(&pipex, argc, argv, envp);
 	ft_close_fds(pipex.fd);
 	while (wait(NULL) > 0)
 		;

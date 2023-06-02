@@ -6,7 +6,7 @@
 /*   By: lkoletzk <lkoletzk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/10 17:42:37 by lkoletzk          #+#    #+#             */
-/*   Updated: 2023/05/18 12:04:25 by lkoletzk         ###   ########.fr       */
+/*   Updated: 2023/06/02 12:20:01 by lkoletzk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ void	ft_child_processes(t_pipe_b *pipex, char **argv, char **envp, int i)
 		ft_save_output(pipex, fd);
 }
 
-void	ft_last_child_process(t_pipe_b *pipex, int argc, char **argv,
+void	ft_last_process(t_pipe_b *pipex, int argc, char **argv,
 	char *envp[])
 {
 	pid_t	pid;

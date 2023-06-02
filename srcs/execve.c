@@ -6,7 +6,7 @@
 /*   By: lkoletzk <lkoletzk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/18 10:18:33 by lkoletzk          #+#    #+#             */
-/*   Updated: 2023/05/18 12:10:35 by lkoletzk         ###   ########.fr       */
+/*   Updated: 2023/06/02 13:49:39 by lkoletzk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,32 +18,46 @@
 3- Separe les differentes adresses a chaque ':' */
 char	**ft_find_command_paths(char **envp)
 {
-	char	*path_envp;
 	char	**paths;
 	int		len;
 
 	len = 0;
-	if (!envp[0])
+	if (!*envp)
 		return (NULL);
-	while (ft_strncmp("PATH=", *envp, 5))
+	while (*envp)
+	{
+		if (ft_strncmp("PATH", *envp, 4) == 0)
+		{
+			paths = ft_split(*envp + 5, ':');
+			if (!*paths)
+				return (NULL);
+			return (paths);
+		}
 		envp++;
-	*envp = *envp + 5;
-	while (envp[0][len] != '\n' && envp[0][len] != '\0')
-		len++;
-	path_envp = ft_substr(envp[0], 0, len);
-	if (!path_envp)
-		return (NULL);
-	paths = ft_split(path_envp, ':');
-	free(path_envp);
-	if (!paths)
-		return (ft_freetab(paths));
-	return (paths);
+	}
+	return (NULL);
+}
+
+char	*ft_find_absolut_path(char **paths, char **cmd_args)
+{
+	if (!paths && ft_strchr(cmd_args[0], '/') != NULL)
+	{
+		if (access(cmd_args[0], F_OK | X_OK) == 0)
+			return (cmd_args[0]);
+	}
+	if (paths && access(cmd_args[0], F_OK | X_OK) == 0)
+	{
+		ft_freetab(paths);
+		return (cmd_args[0]);
+	}
+	else
+		ft_child_error(cmd_args, paths);
+	return (NULL);
 }
 
 /* FT_GET_COMMAND:
-1- Verifie si le path (/usr/bin/cmd) n'est pas deja donne
-2- Cherche le path dans l'env
-3- Verifie si la commande existe et peut s'executer 
+1- Verifie si l'absolut path (/usr/bin/cmd) n'est pas déja donné
+2- Verifie si la commande existe et peut s'executer 
 via F_OK: existing file | X_OK: executing permission
 4- Renvoie la commande */
 char	*ft_get_command(char **paths, char **cmd_args)
@@ -52,8 +66,8 @@ char	*ft_get_command(char **paths, char **cmd_args)
 	char	*command;
 	int		x;
 
-	if (!ft_strncmp("/", cmd_args[0], 0) && !access(cmd_args[0], F_OK | X_OK))
-		return (cmd_args[0]);
+	if (!paths || ft_strchr(cmd_args[0], '/') != NULL)
+		return (ft_find_absolut_path(paths, cmd_args));
 	else
 	{
 		x = -1;
@@ -89,16 +103,17 @@ void	ft_execve(char *argv, char **envp)
 		ft_putstr_fd("command not found\n", 2);
 		exit(EXIT_FAILURE);
 	}
-	paths = ft_find_command_paths(envp);
 	cmd_args = ft_split(argv, ' ');
 	if (!cmd_args)
 		exit(EXIT_FAILURE);
+	paths = ft_find_command_paths(envp);
 	cmd = ft_get_command(paths, cmd_args);
 	if (!cmd || execve(cmd, cmd_args, envp) == -1)
 	{
 		ft_putstr_fd("command not found: ", 2);
 		ft_putendl_fd(cmd_args[0], 2);
-		ft_freetab(paths);
+		if (paths)
+			ft_freetab(paths);
 		ft_freetab(cmd_args);
 		if (cmd)
 			free(cmd);

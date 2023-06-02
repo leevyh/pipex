@@ -1,0 +1,96 @@
+valgrind --track-fds=yes --trace-children=yes --leak-check=full --show-leak-kinds=all 
+
+chmod 000 infile
+chmod 000 outfile
+
+/!\ env -i c'est pas propre !
+
+/* MANDATORY */
+
+< infile ls -l | wc -l > outfile
+./pipex infile "ls -l" "wc -l" outfile
+
+< infile yes | head > outfile
+./pipex infile "yes" "head" outfile					// doit fonctionner + SIGPIPE
+
+< infile sleep 5 | sleep 3 > outfile
+./pipex infile "sleep 5" "sleep 3" outfile				// doit sleep au total 5s
+
+< infile sleep 5 | gfhjgfxhj > outfile
+./pipex infile "sleep 5" "gfhjgfxhj" outfile				// doit sleep au total 5s
+
+env -u PATH < infile ls -l | wc -l > outfile
+env -u PATH ./pipex infile "ls -l" "wc -l" outfile			// normal que ca marche pas
+
+env -u PATH < infile /usr/bin/ls -l | /usr/bin/wc -l > outfile
+env -u PATH ./pipex infile "/usr/bin/ls -l" "/usr/bin/wc -l" outfile	// doit fonctionner
+
+< infile ./a.out | wc -l > outfile
+./pipex infile "./a.out" "wc -l" outfile				// normal que ca marche pas
+
+< /dev/stdin head  | wc -l > /dev/stdout
+./pipex /dev/stdin "head" "wc -l" /dev/stdout				// doit fonctionner
+
+< infile "" | "   " > outfile
+./pipex infile "" "   " outfile						// normal que ca marche pas
+
+
+/* ---------------------------------------------- BONUS ---------------------------------------------- */
+
+• Gérez les multi-pipes:
+< infile cmd1 | cmd2 | cmd2 > outfile
+./pipex_bonus infile "cmd1" "cmd2" "cmd3" outfile
+
+< infile cat | grep vers | wc -l > outfile
+./pipex_bonus infile "cat" "grep vers" "wc -l" outfile
+
+< infile sleep 5 | cat infile | grep vers | wc -l > outfile
+./pipex_bonus infile "sleep 5" "cat infile" "grep vers" "wc -l" outfile
+
+
+• Gérez « et » quand le premier paramètre est "here_doc":
+cmd1 << LIMITER | cmd2 >> outfile
+./pipex_bonus here_doc LIMITER cmd cmd1 outfile
+
+cat << LIMITER | wc -l >> outfile
+./pipex_bonus here_doc LIMITER "cat" "wc -l" outfile
+
+
+• Gérez « et » quand le premier paramètre est "here_doc" + gérez les multi-pipes:
+cmd1 << LIMITER | cmd2 | cmd3 >> outfile
+./pipex_bonus here_doc LIMITER "cmd1" "cmd2" "cmd3" outfile
+
+cat << LIMITER | grep Seine | wc -l >> outfile
+./pipex_bonus here_doc LIMITER "cat" "grep Seine" "wc -l" outfile
+
+
+
+
+SIGPIPE et SEGFAULT sont 2 erreurs différentes.
+
+Le SIGPIPE, en gros c'est quand tu as une commande qui écris dans un pipe, mais ce pipe se fait fermer par quelqu'un d'autre.
+Par exemple dans le cas de cat ls, cat écris dans le pipe, mais ls lui s'en fout, vu qu'il ne lit pas dedans.
+Donc ls s'execute, et une fois qu'il a fini, il quitte son process, en fermant le pipe.
+Vu que le pipe est fermé, cat ne peux plus écrire dedans, et crash.
+
+Tu n'as aucun moyen de régler ce problème, et c'en est même pas un en soit, vu que c'est le comportement attendu.
+
+C'est normal que ça le fasse dans ce cas là, puisque la commande n'existe pas, elle quitte le process, puis fait crash la commande d'avant en fermant le pipe. Exemples: "/dev/stdin cat ls /dev/stdout" et "yes head"
+
+Pour expliquer ces 2 cas :
+
+/dev/stdin cat ls /dev/stdout te met le infile sur l'entrée standard, et le outfile sur la sortie standard.
+Donc cat va essayer de lire ce que tu vas écrire dans le terminal. (comme GNL)
+ls va finir de s'executer bien avant que tu tape quoi que ce soit, donc ton cat va crasher.
+
+yes est une commande qui fait une boucle infini en printant ce que tu lui donne en paramètre (par defaut c'est un "y".), et head arrête la commande précedente après le nombre d'itération que tu lui envoie en paramètre. (Par défaut, 10.)
+Donc yes va lancer sa boucle, mais head va couper dès qu'il a lu "y" 10 fois, puis il va quitter le process et fermer le pipe, faisant crasher le yes qui tournait toujours. 
+Le sigpipe est une erreur naturelle du shell/pipe, et tu dois pouvoir faire la même chose, sinon tu risque un KO.
+
+
+< infile yes | head > outfile
+./pipex infile "yes" "head" outfile
+< /dev/stdin cat | ls > /dev/stdout
+./pipex /dev/stdin "cat" "ls" /dev/stdout
+
+
