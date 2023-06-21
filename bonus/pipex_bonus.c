@@ -6,7 +6,7 @@
 /*   By: lkoletzk <lkoletzk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/10 17:42:37 by lkoletzk          #+#    #+#             */
-/*   Updated: 2023/06/02 12:20:01 by lkoletzk         ###   ########.fr       */
+/*   Updated: 2023/06/21 17:02:24 by lkoletzk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ int	ft_here_doc(int argc, char **argv)
 	{
 		write(1, "pipe here_doc> ", 15);
 		line = get_next_line(0);
-		fd = open("here_doc", O_RDWR | O_CREAT | O_TRUNC, 0777);
+		fd = open("here_doc", O_RDWR | O_CREAT | O_APPEND, 0777);
 		while (line)
 		{
 			if (!ft_strncmp(argv[2], line, ft_strlen(argv[2]))

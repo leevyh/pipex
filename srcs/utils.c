@@ -6,7 +6,7 @@
 /*   By: lkoletzk <lkoletzk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/10 12:27:17 by lkoletzk          #+#    #+#             */
-/*   Updated: 2023/06/02 13:48:37 by lkoletzk         ###   ########.fr       */
+/*   Updated: 2023/06/21 17:02:44 by lkoletzk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,10 +23,13 @@ char	**ft_freetab(char **tab)
 	int	x;
 
 	x = 0;
-	while (tab[x])
+	if (tab[x])
 	{
-		free(tab[x]);
-		x++;
+		while (tab[x])
+		{
+			free(tab[x]);
+			x++;
+		}
 	}
 	free(tab);
 	return (NULL);
