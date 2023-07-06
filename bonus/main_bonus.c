@@ -6,7 +6,7 @@
 /*   By: lkoletzk <lkoletzk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/18 10:43:01 by lkoletzk          #+#    #+#             */
-/*   Updated: 2023/06/02 15:58:10 by lkoletzk         ###   ########.fr       */
+/*   Updated: 2023/06/02 12:10:07 by lkoletzk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,3 +36,6 @@ int	main(int argc, char **argv, char **envp)
 		;
 	return (0);
 }
+
+// ERREURS DETECTEES :
+// - fd non fermé
